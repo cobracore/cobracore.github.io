@@ -266,12 +266,40 @@
     .cta-form-row { flex-direction: column; }
     footer { padding: 20px; flex-direction: column; gap: 8px; text-align: center; }
   }
+
+  html {
+    scrollbar-color: rgba(255,255,255,0.14) var(--bg);
+    scrollbar-width: thin;
+  }
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: var(--bg);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.14);
+    border-radius: 5px;
+    border: 2px solid var(--bg);
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(255,255,255,0.22);
+  }
+  ::-webkit-scrollbar-corner {
+    background: var(--bg);
+  }
 </style>
 </head>
 <body>
 
+<div id="landing-view">
+
 <nav>
-  <div class="nav-logo">COBrA</div>
+  <div style="display:flex;align-items:center;gap:16px;">
+    <div class="nav-logo">COBrA</div>
+    <button type="button" onclick="showApp()" style="font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:0.1em;background:none;border:none;cursor:pointer;">Try the app →</button>
+  </div>
   <div class="nav-tag"><span class="status-dot"></span>2,963 closed deals tracked</div>
 </nav>
 
@@ -296,6 +324,7 @@
       <div class="form-row">
         <input type="email" id="e1" placeholder="your@email.com" autocomplete="email" required />
         <button class="btn" type="submit" id="b1">Get Early Access</button>
+        <button type="button" onclick="showApp()" style="font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:0.05em;background:none;border:none;cursor:pointer;padding:14px 0;white-space:nowrap;">or try it first →</button>
       </div>
       <div class="err-msg" id="err1"></div>
       <p class="form-note">No spam. Early access only. Unsubscribe anytime.</p>
@@ -487,6 +516,590 @@
   <div class="ft">Built for buyers and sellers &nbsp;·&nbsp; Contact <a href="mailto:aaron@blnktcore.com">aaron@blnktcore.com</a></div>
 </footer>
 
+</div>
+
+<style>
+#app-view { flex-direction: column; }
+#app-view .app-nav {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 48px;
+  border-bottom: 1px solid var(--border);
+  background: rgba(8,11,15,0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+#app-view .app-shell { display: block; position: relative; height: 100%; flex: 1; min-height: 0; min-width: 0; width: 100%; overflow: hidden; background: var(--bg); }
+#app-view .app-columns { display: flex; height: 100%; overflow: hidden; }
+#app-view .app-sidebar-left { width: 220px; flex-shrink: 0; height: 100%; overflow-y: auto; background: var(--bg2); border-right: 1px solid var(--border); padding: 57px 0 16px; display: flex; flex-direction: column; }
+#app-view .app-sidebar-right { width: 320px; min-width: 320px; flex-shrink: 0; height: 100%; overflow-y: auto; background: var(--bg2); border-left: 1px solid var(--border); }
+#app-view .app-main { flex: 1; overflow-y: auto; padding: 57px 24px 24px; min-width: 0; background: var(--bg); }
+#app-view .sidebar-nav-btn { display: block; width: 100%; padding: 10px 16px; font-family: var(--mono); font-size: 12px; text-align: left; border: none; border-left: 2px solid transparent; background: none; cursor: pointer; color: var(--muted); box-sizing: border-box; }
+#app-view .sidebar-nav-btn:hover { background: rgba(255,255,255,0.04); color: var(--text); }
+#app-view .sidebar-nav-btn.active { background: rgba(0,255,135,0.06); color: var(--green); border-left-color: var(--green); }
+#app-view .niche-pill { font-family: var(--mono); font-size: 10px; color: var(--muted); border: 1px solid var(--border); border-radius: 3px; padding: 4px 10px; background: none; cursor: pointer; }
+#app-view .niche-pill:hover, #app-view .niche-pill.active { border-color: rgba(255,255,255,0.25); color: var(--text); }
+#app-view .tag-default { background: rgba(255,255,255,0.04); color: var(--muted); border: 1px solid var(--border); }
+#app-view .app-input, #app-view .app-select { background: rgba(255,255,255,0.04); border: 1px solid var(--border); border-radius: 4px; padding: 14px 16px; font-family: var(--mono); font-size: 12px; color: var(--text); outline: none; box-sizing: border-box; }
+#app-view .app-input { width: 100%; }
+#app-view .app-input:focus, #app-view .app-select:focus { border-color: rgba(0,255,135,0.4); background: rgba(0,255,135,0.025); }
+#app-view .app-input::placeholder { color: var(--muted); }
+#app-view .app-select { padding: 12px 14px; cursor: pointer; }
+#app-view .app-select option { background: #0d1117; }
+#app-view .app-listing-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 6px; overflow: hidden; margin-top: 8px; }
+#app-view .app-listing-card { background: var(--bg2); padding: 14px 16px; transition: background 0.2s; }
+#app-view .app-listing-card:hover { background: rgba(255,255,255,0.02); }
+#app-view .app-listing-card .listing-stat-line { display: flex; justify-content: space-between; align-items: center; font-family: var(--mono); font-size: 11px; }
+#app-view .app-listing-card .listing-stat-line .k { color: var(--muted); }
+#app-view .app-listing-card .listing-stat-line .v { color: var(--text); }
+#app-view .app-listing-card .listing-stat-line .v.green { color: var(--green); }
+#app-view .app-listing-card .card-title { font-size: 13px; font-weight: 700; margin: 10px 0; line-height: 1.4; }
+#app-view .app-feed-stack { padding: 8px 8px 20px; display: flex; flex-direction: column; gap: 8px; }
+#app-view .app-feed-stack .data-card { margin: 0; width: 100%; box-sizing: border-box; padding: 14px 14px; }
+#app-view .app-feed-stack .card-title { font-size: 12px; margin-bottom: 8px; }
+#app-view .app-feed-stack .stat-line { font-size: 10px; }
+#app-view .app-feed-stack .card-type { flex-wrap: wrap; gap: 4px; }
+#app-view .app-feed-stack .tag { white-space: nowrap; }
+#app-view .app-feed-stack .card-insight { font-size: 9px; line-height: 1.5; }
+@media (max-width: 1100px) {
+  #app-view .app-listing-grid { grid-template-columns: 1fr; }
+}
+</style>
+
+<div id="app-view" style="display:none; height:100vh; overflow:hidden;">
+  <div class="app-shell">
+    <div class="app-nav">
+      <div style="display:flex;align-items:center;gap:20px;">
+        <div class="nav-logo">COBrA</div>
+        <button type="button" onclick="showLanding()" style="font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:0.08em;background:none;border:none;cursor:pointer;">← Back</button>
+      </div>
+      <div class="nav-tag"><span class="status-dot"></span>2,963 closed deals tracked</div>
+    </div>
+    <div class="app-columns">
+      <aside class="app-sidebar-left">
+        <div style="font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:0.2em;text-transform:uppercase;padding:0 16px;margin-bottom:8px;">NAVIGATION</div>
+        <button type="button" class="sidebar-nav-btn active">⬡ &nbsp;Market Feed</button>
+        <button type="button" class="sidebar-nav-btn">⊕ &nbsp;Comp Search</button>
+        <button type="button" class="sidebar-nav-btn">▼ &nbsp;Price Drops</button>
+        <button type="button" class="sidebar-nav-btn">◈ &nbsp;Niches</button>
+        <button type="button" class="sidebar-nav-btn">◆ &nbsp;Ask COBrA</button>
+        <div style="flex:1;min-height:8px;"></div>
+        <div style="border-top:1px solid var(--border);padding:16px;">
+          <div style="font-family:var(--mono);font-size:10px;color:var(--muted);line-height:1.6;">2,963 deals tracked<br>57 niches<br>Updated daily</div>
+        </div>
+      </aside>
+      <div class="app-main">
+        <input type="text" class="app-input" placeholder="Search by niche, keyword, or business type..." autocomplete="off">
+        <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:12px;">
+          <button type="button" class="niche-pill">Pet Care</button>
+          <button type="button" class="niche-pill">Health &amp; Fitness</button>
+          <button type="button" class="niche-pill">Home</button>
+          <button type="button" class="niche-pill">Beauty</button>
+          <button type="button" class="niche-pill">Sports</button>
+          <button type="button" class="niche-pill">Technology</button>
+          <button type="button" class="niche-pill">Food &amp; Beverages</button>
+          <button type="button" class="niche-pill">Supplements</button>
+          <button type="button" class="niche-pill">Apparel</button>
+          <button type="button" class="niche-pill">Entertainment</button>
+          <button type="button" class="niche-pill">Travel</button>
+          <button type="button" class="niche-pill">Finance</button>
+          <button type="button" class="niche-pill">Medical</button>
+          <button type="button" class="niche-pill">Culinary</button>
+          <button type="button" class="niche-pill">Music</button>
+        </div>
+        <div style="display:flex;gap:10px;align-items:center;margin-top:12px;flex-wrap:wrap;">
+          <input type="number" class="app-input" placeholder="$0 – any" style="width:160px;">
+          <select class="app-select" style="width:100px;">
+            <option>±25%</option>
+            <option>±50%</option>
+            <option>±75%</option>
+            <option>±100%</option>
+          </select>
+          <select class="app-select" style="width:120px;">
+            <option>Sold only</option>
+            <option>All</option>
+          </select>
+          <button type="button" class="btn" style="font-size:11px;">SEARCH</button>
+        </div>
+        <div style="font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:20px;letter-spacing:0.05em;">// 16 listings</div>
+        <div class="app-listing-grid">
+          <div class="app-listing-card">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;">
+              <div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;">
+                <span class="tag tag-default">Empire Flippers</span>
+                <span class="tag tag-yellow">Health &amp; Fitness</span>
+                <span class="tag tag-green">Amazon FBA</span>
+              </div>
+              <span style="font-family:var(--mono);font-size:10px;color:var(--muted);flex-shrink:0;">7d listed</span>
+            </div>
+            <div class="card-title">$45.9K/mo Amazon FBA in Health &amp; Fitness</div>
+            <div class="card-stats" style="display:flex;flex-direction:column;gap:6px;">
+              <div class="listing-stat-line"><span class="k">Asking Price</span><span class="v">$478,736</span></div>
+              <div class="listing-stat-line"><span class="k">Monthly Profit</span><span class="v">$11,133/mo</span></div>
+              <div class="listing-stat-line"><span class="k">Annual Multiple</span><span class="v green">3.58x SDE</span></div>
+              <div class="listing-stat-line"><span class="k">Profit Margin</span><span class="v">24%</span></div>
+              <div class="listing-stat-line"><span class="k">Monetization</span><span class="v">Amazon FBA</span></div>
+            </div>
+            <hr class="card-divider" style="margin:10px 0;">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <span class="tag tag-green">✓ sold</span>
+              <a href="https://empireflippers.com/listing/53551" style="color:var(--green);text-decoration:none;font-family:var(--mono);font-size:11px;">View listing →</a>
+            </div>
+          </div>
+          <div class="app-listing-card">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;">
+              <div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;">
+                <span class="tag tag-default">Empire Flippers</span>
+                <span class="tag tag-yellow">Home</span>
+                <span class="tag tag-green">Affiliate</span>
+              </div>
+              <span style="font-family:var(--mono);font-size:10px;color:var(--muted);flex-shrink:0;">87d listed</span>
+            </div>
+            <div class="card-title">$60.8K/mo Affiliate Site in Home Niche</div>
+            <div class="card-stats" style="display:flex;flex-direction:column;gap:6px;">
+              <div class="listing-stat-line"><span class="k">Asking Price</span><span class="v">$549,185</span></div>
+              <div class="listing-stat-line"><span class="k">Monthly Profit</span><span class="v">$60,800/mo</span></div>
+              <div class="listing-stat-line"><span class="k">Annual Multiple</span><span class="v green">2.99x SDE</span></div>
+              <div class="listing-stat-line"><span class="k">Profit Margin</span><span class="v">26%</span></div>
+              <div class="listing-stat-line"><span class="k">Monetization</span><span class="v">Affiliate</span></div>
+            </div>
+            <hr class="card-divider" style="margin:10px 0;">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <span class="tag tag-green">✓ sold</span>
+              <a href="https://empireflippers.com/listing/90110" style="color:var(--green);text-decoration:none;font-family:var(--mono);font-size:11px;">View listing →</a>
+            </div>
+          </div>
+          <div class="app-listing-card">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;">
+              <div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;">
+                <span class="tag tag-default">Empire Flippers</span>
+                <span class="tag tag-yellow">Pet Care</span>
+                <span class="tag tag-green">Affiliate</span>
+              </div>
+              <span style="font-family:var(--mono);font-size:10px;color:var(--muted);flex-shrink:0;">18d listed</span>
+            </div>
+            <div class="card-title">$7.3K/mo Affiliate Site in Pet Care</div>
+            <div class="card-stats" style="display:flex;flex-direction:column;gap:6px;">
+              <div class="listing-stat-line"><span class="k">Asking Price</span><span class="v">$216,028</span></div>
+              <div class="listing-stat-line"><span class="k">Monthly Profit</span><span class="v">$6,001/mo</span></div>
+              <div class="listing-stat-line"><span class="k">Annual Multiple</span><span class="v green">3.0x SDE</span></div>
+              <div class="listing-stat-line"><span class="k">Profit Margin</span><span class="v">68%</span></div>
+              <div class="listing-stat-line"><span class="k">Monetization</span><span class="v">Affiliate</span></div>
+            </div>
+            <hr class="card-divider" style="margin:10px 0;">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <span class="tag tag-green">✓ sold</span>
+              <a href="https://empireflippers.com/listing/46215" style="color:var(--green);text-decoration:none;font-family:var(--mono);font-size:11px;">View listing →</a>
+            </div>
+          </div>
+          <div class="app-listing-card">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;">
+              <div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;">
+                <span class="tag tag-default">Empire Flippers</span>
+                <span class="tag tag-yellow">Pet Care</span>
+                <span class="tag tag-green">Display Ads</span>
+              </div>
+              <span style="font-family:var(--mono);font-size:10px;color:var(--muted);flex-shrink:0;">55d listed</span>
+            </div>
+            <div class="card-title">$14.2K/mo Display Advertising in Pet Care</div>
+            <div class="card-stats" style="display:flex;flex-direction:column;gap:6px;">
+              <div class="listing-stat-line"><span class="k">Asking Price</span><span class="v">$208,431</span></div>
+              <div class="listing-stat-line"><span class="k">Monthly Profit</span><span class="v">$7,187/mo</span></div>
+              <div class="listing-stat-line"><span class="k">Annual Multiple</span><span class="v green">2.42x SDE</span></div>
+              <div class="listing-stat-line"><span class="k">Profit Margin</span><span class="v">50%</span></div>
+              <div class="listing-stat-line"><span class="k">Monetization</span><span class="v">Display Ads</span></div>
+            </div>
+            <hr class="card-divider" style="margin:10px 0;">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <span class="tag tag-green">✓ sold</span>
+              <a href="https://empireflippers.com/listing/88755" style="color:var(--green);text-decoration:none;font-family:var(--mono);font-size:11px;">View listing →</a>
+            </div>
+          </div>
+          <div class="app-listing-card">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;">
+              <div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;">
+                <span class="tag tag-default">Empire Flippers</span>
+                <span class="tag tag-yellow">Health &amp; Fitness</span>
+                <span class="tag tag-green">Amazon FBA</span>
+              </div>
+              <span style="font-family:var(--mono);font-size:10px;color:var(--muted);flex-shrink:0;">117d listed</span>
+            </div>
+            <div class="card-title">$38.3K/mo Amazon FBA in Health &amp; Fitness</div>
+            <div class="card-stats" style="display:flex;flex-direction:column;gap:6px;">
+              <div class="listing-stat-line"><span class="k">Asking Price</span><span class="v">$242,453</span></div>
+              <div class="listing-stat-line"><span class="k">Monthly Profit</span><span class="v">$10,102/mo</span></div>
+              <div class="listing-stat-line"><span class="k">Annual Multiple</span><span class="v green">2.0x SDE</span></div>
+              <div class="listing-stat-line"><span class="k">Profit Margin</span><span class="v">13%</span></div>
+              <div class="listing-stat-line"><span class="k">Monetization</span><span class="v">Amazon FBA</span></div>
+            </div>
+            <hr class="card-divider" style="margin:10px 0;">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <span class="tag tag-green">✓ sold</span>
+              <a href="https://empireflippers.com/listing/40965" style="color:var(--green);text-decoration:none;font-family:var(--mono);font-size:11px;">View listing →</a>
+            </div>
+          </div>
+          <div class="app-listing-card">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;">
+              <div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;">
+                <span class="tag tag-default">Empire Flippers</span>
+                <span class="tag tag-yellow">Home</span>
+                <span class="tag tag-green">Amazon FBA</span>
+              </div>
+              <span style="font-family:var(--mono);font-size:10px;color:var(--muted);flex-shrink:0;">10d listed</span>
+            </div>
+            <div class="card-title">$32.9K/mo Amazon FBA in Home Niche</div>
+            <div class="card-stats" style="display:flex;flex-direction:column;gap:6px;">
+              <div class="listing-stat-line"><span class="k">Asking Price</span><span class="v">$576,870</span></div>
+              <div class="listing-stat-line"><span class="k">Monthly Profit</span><span class="v">$12,819/mo</span></div>
+              <div class="listing-stat-line"><span class="k">Annual Multiple</span><span class="v green">3.75x SDE</span></div>
+              <div class="listing-stat-line"><span class="k">Profit Margin</span><span class="v">18%</span></div>
+              <div class="listing-stat-line"><span class="k">Monetization</span><span class="v">Amazon FBA</span></div>
+            </div>
+            <hr class="card-divider" style="margin:10px 0;">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <span class="tag tag-green">✓ sold</span>
+              <a href="https://empireflippers.com/listing/58879" style="color:var(--green);text-decoration:none;font-family:var(--mono);font-size:11px;">View listing →</a>
+            </div>
+          </div>
+          <div class="app-listing-card">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;">
+              <div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;">
+                <span class="tag tag-default">Empire Flippers</span>
+                <span class="tag tag-yellow">Health &amp; Fitness</span>
+                <span class="tag tag-green">Display Ads</span>
+              </div>
+              <span style="font-family:var(--mono);font-size:10px;color:var(--muted);flex-shrink:0;">38d listed</span>
+            </div>
+            <div class="card-title">$9.6K/mo Display Advertising in Health &amp; Fitness</div>
+            <div class="card-stats" style="display:flex;flex-direction:column;gap:6px;">
+              <div class="listing-stat-line"><span class="k">Asking Price</span><span class="v">$395,101</span></div>
+              <div class="listing-stat-line"><span class="k">Monthly Profit</span><span class="v">$9,188/mo</span></div>
+              <div class="listing-stat-line"><span class="k">Annual Multiple</span><span class="v green">3.58x SDE</span></div>
+              <div class="listing-stat-line"><span class="k">Profit Margin</span><span class="v">55%</span></div>
+              <div class="listing-stat-line"><span class="k">Monetization</span><span class="v">Display Ads</span></div>
+            </div>
+            <hr class="card-divider" style="margin:10px 0;">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <span class="tag tag-green">✓ sold</span>
+              <a href="https://empireflippers.com/listing/69779" style="color:var(--green);text-decoration:none;font-family:var(--mono);font-size:11px;">View listing →</a>
+            </div>
+          </div>
+          <div class="app-listing-card">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;">
+              <div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;">
+                <span class="tag tag-default">Empire Flippers</span>
+                <span class="tag tag-yellow">Art</span>
+                <span class="tag tag-green">Subscription</span>
+              </div>
+              <span style="font-family:var(--mono);font-size:10px;color:var(--muted);flex-shrink:0;">128d listed</span>
+            </div>
+            <div class="card-title">$28.5K/mo Subscription Box in Art Niche</div>
+            <div class="card-stats" style="display:flex;flex-direction:column;gap:6px;">
+              <div class="listing-stat-line"><span class="k">Asking Price</span><span class="v">$232,704</span></div>
+              <div class="listing-stat-line"><span class="k">Monthly Profit</span><span class="v">$8,500/mo</span></div>
+              <div class="listing-stat-line"><span class="k">Annual Multiple</span><span class="v green">2.71x SDE</span></div>
+              <div class="listing-stat-line"><span class="k">Profit Margin</span><span class="v">30%</span></div>
+              <div class="listing-stat-line"><span class="k">Monetization</span><span class="v">Subscription</span></div>
+            </div>
+            <hr class="card-divider" style="margin:10px 0;">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <span class="tag tag-green">✓ sold</span>
+              <a href="https://empireflippers.com/listing/89831" style="color:var(--green);text-decoration:none;font-family:var(--mono);font-size:11px;">View listing →</a>
+            </div>
+          </div>
+          <div class="app-listing-card">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;">
+              <div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;">
+                <span class="tag tag-default">Empire Flippers</span>
+                <span class="tag tag-yellow">Health &amp; Fitness</span>
+                <span class="tag tag-green">Amazon FBA</span>
+              </div>
+              <span style="font-family:var(--mono);font-size:10px;color:var(--muted);flex-shrink:0;">98d listed</span>
+            </div>
+            <div class="card-title">$29.7K/mo Amazon FBA in Health &amp; Fitness</div>
+            <div class="card-stats" style="display:flex;flex-direction:column;gap:6px;">
+              <div class="listing-stat-line"><span class="k">Asking Price</span><span class="v">$325,841</span></div>
+              <div class="listing-stat-line"><span class="k">Monthly Profit</span><span class="v">$8,807/mo</span></div>
+              <div class="listing-stat-line"><span class="k">Annual Multiple</span><span class="v green">3.08x SDE</span></div>
+              <div class="listing-stat-line"><span class="k">Profit Margin</span><span class="v">30%</span></div>
+              <div class="listing-stat-line"><span class="k">Monetization</span><span class="v">Amazon FBA</span></div>
+            </div>
+            <hr class="card-divider" style="margin:10px 0;">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <span class="tag tag-green">✓ sold</span>
+              <a href="https://empireflippers.com/listing/77071" style="color:var(--green);text-decoration:none;font-family:var(--mono);font-size:11px;">View listing →</a>
+            </div>
+          </div>
+          <div class="app-listing-card">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;">
+              <div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;">
+                <span class="tag tag-default">Empire Flippers</span>
+                <span class="tag tag-yellow">Pet Care</span>
+                <span class="tag tag-green">Amazon KDP</span>
+              </div>
+              <span style="font-family:var(--mono);font-size:10px;color:var(--muted);flex-shrink:0;">39d listed</span>
+            </div>
+            <div class="card-title">$9.1K/mo Amazon KDP in Pet Care</div>
+            <div class="card-stats" style="display:flex;flex-direction:column;gap:6px;">
+              <div class="listing-stat-line"><span class="k">Asking Price</span><span class="v">$243,567</span></div>
+              <div class="listing-stat-line"><span class="k">Monthly Profit</span><span class="v">$6,743/mo</span></div>
+              <div class="listing-stat-line"><span class="k">Annual Multiple</span><span class="v green">3.0x SDE</span></div>
+              <div class="listing-stat-line"><span class="k">Profit Margin</span><span class="v">74%</span></div>
+              <div class="listing-stat-line"><span class="k">Monetization</span><span class="v">Amazon KDP</span></div>
+            </div>
+            <hr class="card-divider" style="margin:10px 0;">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <span class="tag tag-green">✓ sold</span>
+              <a href="https://empireflippers.com/listing/44033" style="color:var(--green);text-decoration:none;font-family:var(--mono);font-size:11px;">View listing →</a>
+            </div>
+          </div>
+          <div class="app-listing-card">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;">
+              <div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;">
+                <span class="tag tag-default">Empire Flippers</span>
+                <span class="tag tag-yellow">Home</span>
+                <span class="tag tag-green">Amazon FBA</span>
+              </div>
+              <span style="font-family:var(--mono);font-size:10px;color:var(--muted);flex-shrink:0;">40d listed</span>
+            </div>
+            <div class="card-title">$46.5K/mo Amazon FBA in Home</div>
+            <div class="card-stats" style="display:flex;flex-direction:column;gap:6px;">
+              <div class="listing-stat-line"><span class="k">Asking Price</span><span class="v">$370,916</span></div>
+              <div class="listing-stat-line"><span class="k">Monthly Profit</span><span class="v">$13,738/mo</span></div>
+              <div class="listing-stat-line"><span class="k">Annual Multiple</span><span class="v green">2.25x SDE</span></div>
+              <div class="listing-stat-line"><span class="k">Profit Margin</span><span class="v">30%</span></div>
+              <div class="listing-stat-line"><span class="k">Monetization</span><span class="v">Amazon FBA</span></div>
+            </div>
+            <hr class="card-divider" style="margin:10px 0;">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <span class="tag tag-green">✓ sold</span>
+              <a href="https://empireflippers.com/listing/43861" style="color:var(--green);text-decoration:none;font-family:var(--mono);font-size:11px;">View listing →</a>
+            </div>
+          </div>
+          <div class="app-listing-card">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;">
+              <div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;">
+                <span class="tag tag-default">Empire Flippers</span>
+                <span class="tag tag-yellow">Health &amp; Fitness</span>
+                <span class="tag tag-green">Amazon FBA</span>
+              </div>
+              <span style="font-family:var(--mono);font-size:10px;color:var(--muted);flex-shrink:0;">7d listed</span>
+            </div>
+            <div class="card-title">$73.1K/mo Amazon FBA in Health &amp; Fitness</div>
+            <div class="card-stats" style="display:flex;flex-direction:column;gap:6px;">
+              <div class="listing-stat-line"><span class="k">Asking Price</span><span class="v">$414,645</span></div>
+              <div class="listing-stat-line"><span class="k">Monthly Profit</span><span class="v">$9,424/mo</span></div>
+              <div class="listing-stat-line"><span class="k">Annual Multiple</span><span class="v green">3.67x SDE</span></div>
+              <div class="listing-stat-line"><span class="k">Profit Margin</span><span class="v">13%</span></div>
+              <div class="listing-stat-line"><span class="k">Monetization</span><span class="v">Amazon FBA</span></div>
+            </div>
+            <hr class="card-divider" style="margin:10px 0;">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <span class="tag tag-green">✓ sold</span>
+              <a href="https://empireflippers.com/listing/51894" style="color:var(--green);text-decoration:none;font-family:var(--mono);font-size:11px;">View listing →</a>
+            </div>
+          </div>
+          <div class="app-listing-card">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;">
+              <div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;">
+                <span class="tag tag-default">Empire Flippers</span>
+                <span class="tag tag-yellow">Home</span>
+                <span class="tag tag-green">Amazon FBA</span>
+              </div>
+              <span style="font-family:var(--mono);font-size:10px;color:var(--muted);flex-shrink:0;">3d listed</span>
+            </div>
+            <div class="card-title">$75.0K/mo Amazon FBA in Home</div>
+            <div class="card-stats" style="display:flex;flex-direction:column;gap:6px;">
+              <div class="listing-stat-line"><span class="k">Asking Price</span><span class="v">$559,117</span></div>
+              <div class="listing-stat-line"><span class="k">Monthly Profit</span><span class="v">$13,312/mo</span></div>
+              <div class="listing-stat-line"><span class="k">Annual Multiple</span><span class="v green">3.5x SDE</span></div>
+              <div class="listing-stat-line"><span class="k">Profit Margin</span><span class="v">18%</span></div>
+              <div class="listing-stat-line"><span class="k">Monetization</span><span class="v">Amazon FBA</span></div>
+            </div>
+            <hr class="card-divider" style="margin:10px 0;">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <span class="tag tag-green">✓ sold</span>
+              <a href="https://empireflippers.com/listing/62330" style="color:var(--green);text-decoration:none;font-family:var(--mono);font-size:11px;">View listing →</a>
+            </div>
+          </div>
+          <div class="app-listing-card">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;">
+              <div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;">
+                <span class="tag tag-default">Empire Flippers</span>
+                <span class="tag tag-yellow">Pet Care</span>
+                <span class="tag tag-green">Display Ads</span>
+              </div>
+              <span style="font-family:var(--mono);font-size:10px;color:var(--muted);flex-shrink:0;">55d listed</span>
+            </div>
+            <div class="card-title">$14.2K/mo Display Advertising in Pet Care</div>
+            <div class="card-stats" style="display:flex;flex-direction:column;gap:6px;">
+              <div class="listing-stat-line"><span class="k">Asking Price</span><span class="v">$208,431</span></div>
+              <div class="listing-stat-line"><span class="k">Monthly Profit</span><span class="v">$7,187/mo</span></div>
+              <div class="listing-stat-line"><span class="k">Annual Multiple</span><span class="v green">2.42x SDE</span></div>
+              <div class="listing-stat-line"><span class="k">Profit Margin</span><span class="v">50%</span></div>
+              <div class="listing-stat-line"><span class="k">Monetization</span><span class="v">Display Ads</span></div>
+            </div>
+            <hr class="card-divider" style="margin:10px 0;">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <span class="tag tag-green">✓ sold</span>
+              <a href="https://empireflippers.com/listing/88755" style="color:var(--green);text-decoration:none;font-family:var(--mono);font-size:11px;">View listing →</a>
+            </div>
+          </div>
+          <div class="app-listing-card">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;">
+              <div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;">
+                <span class="tag tag-default">Empire Flippers</span>
+                <span class="tag tag-yellow">Home</span>
+                <span class="tag tag-green">Amazon FBA</span>
+              </div>
+              <span style="font-family:var(--mono);font-size:10px;color:var(--muted);flex-shrink:0;">302d listed</span>
+            </div>
+            <div class="card-title">$83.1K/mo Amazon FBA in Home</div>
+            <div class="card-stats" style="display:flex;flex-direction:column;gap:6px;">
+              <div class="listing-stat-line"><span class="k">Asking Price</span><span class="v">$342,412</span></div>
+              <div class="listing-stat-line"><span class="k">Monthly Profit</span><span class="v">$12,229/mo</span></div>
+              <div class="listing-stat-line"><span class="k">Annual Multiple</span><span class="v green">2.33x SDE</span></div>
+              <div class="listing-stat-line"><span class="k">Profit Margin</span><span class="v">15%</span></div>
+              <div class="listing-stat-line"><span class="k">Monetization</span><span class="v">Amazon FBA</span></div>
+            </div>
+            <hr class="card-divider" style="margin:10px 0;">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <span class="tag tag-green">✓ sold</span>
+              <a href="https://empireflippers.com/listing/84258" style="color:var(--green);text-decoration:none;font-family:var(--mono);font-size:11px;">View listing →</a>
+            </div>
+          </div>
+          <div class="app-listing-card">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;">
+              <div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;">
+                <span class="tag tag-default">Empire Flippers</span>
+                <span class="tag tag-yellow">Health &amp; Fitness</span>
+                <span class="tag tag-green">Amazon FBA</span>
+              </div>
+              <span style="font-family:var(--mono);font-size:10px;color:var(--muted);flex-shrink:0;">51d listed</span>
+            </div>
+            <div class="card-title">$15.9K/mo Amazon FBA in Health &amp; Fitness</div>
+            <div class="card-stats" style="display:flex;flex-direction:column;gap:6px;">
+              <div class="listing-stat-line"><span class="k">Asking Price</span><span class="v">$236,949</span></div>
+              <div class="listing-stat-line"><span class="k">Monthly Profit</span><span class="v">$8,776/mo</span></div>
+              <div class="listing-stat-line"><span class="k">Annual Multiple</span><span class="v green">2.25x SDE</span></div>
+              <div class="listing-stat-line"><span class="k">Profit Margin</span><span class="v">55%</span></div>
+              <div class="listing-stat-line"><span class="k">Monetization</span><span class="v">Amazon FBA</span></div>
+            </div>
+            <hr class="card-divider" style="margin:10px 0;">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <span class="tag tag-green">✓ sold</span>
+              <a href="https://empireflippers.com/listing/44349" style="color:var(--green);text-decoration:none;font-family:var(--mono);font-size:11px;">View listing →</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <aside class="app-sidebar-right">
+        <div style="padding:73px 16px 16px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:flex-start;gap:12px;">
+          <div>
+            <div style="font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:0.15em;text-transform:uppercase;">// Market Feed</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
+            <span class="status-dot" style="margin-right:0;"></span>
+            <span style="font-family:var(--mono);font-size:10px;color:var(--green);">Live</span>
+          </div>
+        </div>
+        <div class="app-feed-stack">
+          <div class="data-card">
+            <div class="card-type">
+              <span class="tag tag-red">▼ Price Drop</span>
+              <span style="color:var(--muted);font-family:var(--mono);font-size:10px;">Beauty · eCommerce</span>
+            </div>
+            <div class="card-title">$79K/mo eCommerce Business<br>in the Beauty Niche</div>
+            <div class="card-stats">
+              <div class="stat-line"><span class="k">Asking price</span><span class="v"><span class="strike">$198,212</span><span style="color:var(--red)">$121,976</span></span></div>
+              <div class="stat-line"><span class="k">Drop</span><span class="v red">▼ $76,236 (-38.5%) overnight</span></div>
+              <div class="stat-line"><span class="k">Days on market</span><span class="v">42 days</span></div>
+            </div>
+            <hr class="card-divider">
+            <div class="card-insight">A 38.5% overnight cut on a $79K/mo business. Motivated seller &mdash; without this alert you&apos;d never know.</div>
+          </div>
+          <div class="data-card">
+            <div class="card-type">
+              <span class="tag tag-yellow">◎ Disappeared</span>
+              <span style="color:var(--muted);font-family:var(--mono);font-size:10px;">Home · Affiliate Site</span>
+            </div>
+            <div class="card-title">$60.8K/mo Affiliate Site<br>in the Home Niche</div>
+            <div class="card-stats">
+              <div class="stat-line"><span class="k">Last asking price</span><span class="v">$549,185</span></div>
+              <div class="stat-line"><span class="k">Multiple</span><span class="v">32.0x mo · 2.67x annual SDE</span></div>
+              <div class="stat-line"><span class="k">Days on market</span><span class="v yellow">87 days → vanished</span></div>
+            </div>
+            <hr class="card-divider">
+            <div class="card-insight">Disappeared from Empire Flippers after 87 days. Almost certainly went under contract.</div>
+          </div>
+          <div class="data-card">
+            <div class="card-type">
+              <span class="tag tag-red">▼ Price Drop</span>
+              <span style="color:var(--muted);font-family:var(--mono);font-size:10px;">Art · Subscription Box</span>
+            </div>
+            <div class="card-title">$28.5K/mo Subscription-Box<br>in the Art Niche</div>
+            <div class="card-stats">
+              <div class="stat-line"><span class="k">Asking price</span><span class="v"><span class="strike">$290,872</span><span style="color:var(--red)">$232,704</span></span></div>
+              <div class="stat-line"><span class="k">Drop</span><span class="v red">▼ $58,168 (-20%) in one day</span></div>
+              <div class="stat-line"><span class="k">Days on market</span><span class="v">128 days on market</span></div>
+            </div>
+            <hr class="card-divider">
+            <div class="card-insight">128 days then a 20% cut. The longer it sits the more leverage a buyer has.</div>
+          </div>
+          <div class="data-card">
+            <div class="card-type">
+              <span class="tag tag-yellow">◎ Disappeared</span>
+              <span style="color:var(--muted);font-family:var(--mono);font-size:10px;">Music · Amazon FBA</span>
+            </div>
+            <div class="card-title">$11.5K/mo Amazon FBA<br>in the Music Niche</div>
+            <div class="card-stats">
+              <div class="stat-line"><span class="k">Last asking price</span><span class="v">$295,229</span></div>
+              <div class="stat-line"><span class="k">Multiple</span><span class="v">36.0x mo · 3.0x annual SDE</span></div>
+              <div class="stat-line"><span class="k">Days on market</span><span class="v yellow">79 days → vanished</span></div>
+            </div>
+            <hr class="card-divider">
+            <div class="card-insight">Gone after 79 days. COBrA flags disappearances immediately so you know what the market is absorbing.</div>
+          </div>
+          <div class="data-card">
+            <div class="card-type">
+              <span class="tag tag-green">● Market Stat</span>
+              <span style="color:var(--muted);font-family:var(--mono);font-size:10px;">Pet Care · Cross-Market</span>
+            </div>
+            <div class="card-title">Pet Care Commands 3.12x Across 113 Deals</div>
+            <div class="card-stats">
+              <div class="stat-line"><span class="k">Avg annual multiple</span><span class="v">3.12x SDE</span></div>
+              <div class="stat-line"><span class="k">Total deals</span><span class="v">113 confirmed closed</span></div>
+              <div class="stat-line"><span class="k">Total volume</span><span class="v">$29.5M tracked</span></div>
+            </div>
+            <hr class="card-divider">
+            <div class="card-insight">Highest-multiple niche in the database. Pet Care buyers are paying a premium — and sellers know it.</div>
+          </div>
+          <div class="data-card">
+            <div class="card-type">
+              <span class="tag tag-green">⊕ Comp Insight</span>
+              <span style="color:var(--muted);font-family:var(--mono);font-size:10px;">Health &amp; Fitness · Amazon FBA</span>
+            </div>
+            <div class="card-title">Same Niche — Sold in 3 Days vs 117 Days</div>
+            <div class="card-stats">
+              <div class="stat-line"><span class="k">Fastest sale</span><span class="v">3 days</span></div>
+              <div class="stat-line"><span class="k">Slowest sale</span><span class="v">117 days</span></div>
+              <div class="stat-line"><span class="k">Avg asking price</span><span class="v">$322,814</span></div>
+            </div>
+            <hr class="card-divider">
+            <div class="card-insight">Pricing discipline is everything. Businesses priced at market multiple sell fast. Overpriced ones sit and compress.</div>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</div>
+
 <script>
 async function handleSubmit(e, formId, emailId, btnId, successId, errId) {
   e.preventDefault();
@@ -544,6 +1157,32 @@ async function handleSubmit(e, formId, emailId, btnId, successId, errId) {
     els[current].classList.add('active');
   }, 3500);
 })();
+
+function showApp() {
+  document.getElementById('landing-view').style.display = 'none';
+  document.getElementById('app-view').style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+}
+
+function showLanding() {
+  document.getElementById('app-view').style.display = 'none';
+  document.getElementById('landing-view').style.display = 'block';
+  document.body.style.overflow = '';
+}
+
+document.querySelectorAll('.sidebar-nav-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.sidebar-nav-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  });
+});
+
+document.querySelectorAll('.niche-pill').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.niche-pill').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  });
+});
 </script>
 
 </body>
