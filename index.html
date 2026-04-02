@@ -617,6 +617,7 @@
 #app-view .app-feed-scroll { flex: 1; overflow-y: auto; }
 #app-view .app-main { flex: 1; overflow-y: auto; min-width: 0; background: var(--bg); }
 #app-view .app-search-header { position: sticky; top: 0; z-index: 10; background: var(--bg); padding: 57px 24px 12px; border-bottom: 1px solid var(--border); }
+#app-view .app-disclaimer { font-family: var(--mono); font-size: 10px; letter-spacing: 0.06em; color: rgba(255,180,0,0.75); background: rgba(255,180,0,0.05); border: 1px solid rgba(255,180,0,0.15); border-radius: 4px; padding: 5px 12px; white-space: nowrap; }
 #app-view .app-listings-scroll { padding: 16px 24px 24px; }
 #app-view .app-search-toggle-btn { flex-shrink: 0; background: transparent; border: 1px solid var(--border); border-radius: 4px; color: var(--muted); font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em; padding: 5px 12px; cursor: pointer; transition: border-color 0.2s, color 0.2s; display: flex; align-items: center; gap: 6px; white-space: nowrap; }
 #app-view .app-search-toggle-btn:hover { border-color: rgba(255,255,255,0.2); color: var(--text); }
@@ -663,6 +664,7 @@
         <div class="nav-logo">COBrA</div>
         <button type="button" onclick="showLanding()" style="font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:0.08em;background:none;border:none;cursor:pointer;">← Back</button>
       </div>
+      <div class="app-disclaimer">⚠ Backend not yet implemented — search and filters are non-functional.</div>
       <div class="nav-tag"><span class="status-dot"></span>2,963 closed deals tracked</div>
     </div>
     <div class="app-columns">
