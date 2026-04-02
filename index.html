@@ -47,7 +47,13 @@
     content: '';
     position: fixed; top: -300px; left: -300px;
     width: 800px; height: 800px;
-    background: radial-gradient(circle, rgba(0,255,135,0.035) 0%, transparent 65%);
+    background: radial-gradient(circle, rgba(0,255,135,0.04) 0%, transparent 65%);
+    pointer-events: none; z-index: 0;
+  }
+  .bg-glow-red {
+    position: fixed; bottom: -200px; right: -200px;
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(255,77,77,0.055) 0%, transparent 65%);
     pointer-events: none; z-index: 0;
   }
 
@@ -60,7 +66,21 @@
     backdrop-filter: blur(16px);
   }
 
-  .nav-logo { font-family: var(--mono); font-size: 13px; color: var(--green); letter-spacing: 0.2em; text-transform: uppercase; }
+  .nav-logo {
+    font-family: var(--mono); font-size: 13px; letter-spacing: 0.2em; text-transform: uppercase;
+    background: linear-gradient(90deg, var(--green) 0%, #00e8ff 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  }
+  .motto {
+    font-family: var(--mono); font-size: 11px; color: var(--red);
+    letter-spacing: 0.3em; text-transform: uppercase;
+    opacity: 0; animation: fadeUp 0.5s ease forwards 0.08s;
+    margin-bottom: 16px; display: flex; align-items: center; gap: 10px;
+  }
+  .motto::before {
+    content: ''; display: inline-block; width: 24px; height: 1px;
+    background: var(--red); flex-shrink: 0;
+  }
   .nav-tag { font-family: var(--mono); font-size: 11px; color: var(--muted); }
   .nav-tagline { display: none; }
   .hero-tagline { font-family: var(--sans); font-size: clamp(18px, 2.2vw, 26px); font-weight: 700; color: #fff; letter-spacing: -0.02em; margin-bottom: 28px; opacity: 0; animation: fadeUp 0.5s ease forwards 0.35s; }
@@ -72,6 +92,13 @@
   main { position: relative; z-index: 1; max-width: 900px; margin: 0 auto; padding: 180px 48px 100px; }
 
   .eyebrow { font-family: var(--mono); font-size: 11px; color: var(--green); letter-spacing: 0.25em; text-transform: uppercase; margin-bottom: 24px; opacity: 0; animation: fadeUp 0.5s ease forwards 0.1s; }
+  h1 .strike-accent { position: relative; display: inline-block; }
+  h1 .strike-accent::after {
+    content: ''; position: absolute; left: 0; right: 40%;
+    bottom: -10px; height: 2px;
+    background: linear-gradient(90deg, rgba(255,77,77,0.5) 0%, transparent 100%);
+    border-radius: 2px;
+  }
 
   h1 { font-family: 'Inter', sans-serif; font-size: clamp(36px, 6vw, 68px); font-weight: 800; line-height: 1.05; letter-spacing: -0.035em; margin-bottom: 24px; opacity: 0; animation: fadeUp 0.5s ease forwards 0.2s; }
 
@@ -197,13 +224,25 @@
   .features { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 6px; overflow: hidden; margin-bottom: 72px; opacity: 0; animation: fadeUp 0.5s ease forwards 0.65s; }
   .feature { background: var(--bg); padding: 28px 24px; transition: background 0.2s; }
   .feature:hover { background: var(--green-glow); }
-  .feature-num { font-family: var(--mono); font-size: 10px; color: var(--green); opacity: 0.6; letter-spacing: 0.15em; margin-bottom: 12px; }
+  .feature-num { font-family: var(--mono); font-size: 10px; letter-spacing: 0.15em; margin-bottom: 12px; }
+  .feature:nth-child(1) .feature-num { color: var(--green); opacity: 0.7; }
+  .feature:nth-child(2) .feature-num { color: var(--red); opacity: 0.85; }
+  .feature:nth-child(3) .feature-num { color: var(--green); opacity: 0.5; }
   .feature-title { font-size: 14px; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 8px; }
   .feature-desc { font-size: 12px; color: var(--muted); line-height: 1.7; }
 
   /* BOTTOM CTA */
-  .cta-block { border: 1px solid var(--border); border-radius: 6px; padding: 48px; background: rgba(0,255,135,0.015); opacity: 0; animation: fadeUp 0.5s ease forwards 0.7s; }
+  .cta-block {
+    border: 1px solid var(--border); border-radius: 6px; padding: 48px;
+    background: rgba(0,255,135,0.015); opacity: 0; animation: fadeUp 0.5s ease forwards 0.7s;
+    position: relative; overflow: hidden;
+  }
+  .cta-block::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, var(--red) 0%, var(--green) 60%, transparent 100%);
+  }
   .cta-block h2 { font-size: clamp(20px, 3vw, 28px); font-weight: 800; letter-spacing: -0.03em; margin-bottom: 8px; }
+  .cta-block h2 em { font-style: normal; color: var(--red); }
   .cta-block p { font-size: 14px; color: var(--muted); margin-bottom: 28px; }
   .cta-form-row { display: flex; gap: 10px; max-width: 420px; }
 
@@ -275,6 +314,7 @@
     width: 10px;
     height: 10px;
   }
+
   ::-webkit-scrollbar-track {
     background: var(--bg);
   }
@@ -292,6 +332,7 @@
 </style>
 </head>
 <body>
+<div class="bg-glow-red"></div>
 
 <div id="landing-view">
 
@@ -310,9 +351,10 @@
 </div>
 
 <main>
+  <div class="motto">Know when to strike</div>
   <div class="eyebrow">Comps for Online Business Acquisitions</div>
   <p style="font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:0.08em;margin-bottom:20px;opacity:0;animation:fadeUp 0.5s ease forwards 0.15s;">For buyers evaluating deals. For sellers pricing their exit.</p>
-  <h1>Acquisition Intelligence. Your Competitive Edge.</h1>
+  <h1>Acquisition Intelligence.<br><span class="strike-accent">Your Competitive Edge.</span></h1>
   <p class="hero-tagline">Hours of research. <em>Seconds with COBrA.</em></p>
   <p class="subtitle">
     Access 2,963 confirmed closed deals across ecommerce, FBA, and content sites.<br>
@@ -499,7 +541,7 @@
   </div>
 
   <div class="cta-block">
-    <h2>Stop negotiating blind.</h2>
+    <h2>Stop negotiating <em>blind.</em></h2>
     <p>Join buyers and sellers who want real data before the deal closes.</p>
     <form class="cta-form-row" id="f2" onsubmit="handleSubmit(event,'f2','e2','b2','s2','err2')">
       <input type="email" id="e2" placeholder="your@email.com" autocomplete="email" required style="flex:1;" />
@@ -522,24 +564,36 @@
 #app-view { flex-direction: column; }
 #app-view .app-nav {
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 50;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 20px 48px;
+  top: 0; left: 0; right: 0; z-index: 50;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 48px;
   border-bottom: 1px solid var(--border);
-  background: rgba(8,11,15,0.75);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  border-top: 2px solid transparent;
+  background:
+    linear-gradient(rgba(8,11,15,0.92), rgba(8,11,15,0.92)) padding-box,
+    linear-gradient(90deg, var(--red) 0%, var(--green) 50%, transparent 100%) border-box;
+  backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+}
+#app-view .app-sidebar-left-nav-label {
+  font-family: var(--mono); font-size: 9px; color: var(--muted);
+  letter-spacing: 0.2em; text-transform: uppercase;
+  padding: 16px 20px 8px;
 }
 #app-view .app-shell { display: block; position: relative; height: 100%; flex: 1; min-height: 0; min-width: 0; width: 100%; overflow: hidden; background: var(--bg); }
 #app-view .app-columns { display: flex; height: 100%; overflow: hidden; }
 #app-view .app-sidebar-left { width: 220px; flex-shrink: 0; height: 100%; overflow-y: auto; background: var(--bg2); border-right: 1px solid var(--border); padding: 57px 0 16px; display: flex; flex-direction: column; }
-#app-view .app-sidebar-right { width: 320px; min-width: 320px; flex-shrink: 0; height: 100%; overflow-y: auto; background: var(--bg2); border-left: 1px solid var(--border); }
-#app-view .app-main { flex: 1; overflow-y: auto; padding: 57px 24px 24px; min-width: 0; background: var(--bg); }
+#app-view .app-sidebar-right { width: 320px; min-width: 320px; flex-shrink: 0; height: 100%; overflow: hidden; background: var(--bg2); border-left: 1px solid var(--border); display: flex; flex-direction: column; }
+#app-view .app-feed-header { flex-shrink: 0; padding: 73px 16px 16px; border-bottom: 1px solid var(--border); background: var(--bg2); }
+#app-view .app-feed-scroll { flex: 1; overflow-y: auto; }
+#app-view .app-main { flex: 1; overflow-y: auto; min-width: 0; background: var(--bg); }
+#app-view .app-search-header { position: sticky; top: 0; z-index: 10; background: var(--bg); padding: 57px 24px 12px; border-bottom: 1px solid var(--border); }
+#app-view .app-listings-scroll { padding: 16px 24px 24px; }
+#app-view .app-search-toggle-btn { flex-shrink: 0; background: transparent; border: 1px solid var(--border); border-radius: 4px; color: var(--muted); font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em; padding: 5px 12px; cursor: pointer; transition: border-color 0.2s, color 0.2s; display: flex; align-items: center; gap: 6px; white-space: nowrap; }
+#app-view .app-search-toggle-btn:hover { border-color: rgba(255,255,255,0.2); color: var(--text); }
+#app-view .app-search-arrow { transition: transform 0.2s; display: inline-block; }
+#app-view .app-search-arrow.collapsed { transform: rotate(-90deg); }
+#app-view .app-search-collapsible { overflow: hidden; transition: max-height 0.3s ease, opacity 0.25s ease; max-height: 200px; opacity: 1; }
+#app-view .app-search-collapsible.collapsed { max-height: 0; opacity: 0; }
 #app-view .sidebar-nav-btn { display: block; width: 100%; padding: 10px 16px; font-family: var(--mono); font-size: 12px; text-align: left; border: none; border-left: 2px solid transparent; background: none; cursor: pointer; color: var(--muted); box-sizing: border-box; }
 #app-view .sidebar-nav-btn:hover { background: rgba(255,255,255,0.04); color: var(--text); }
 #app-view .sidebar-nav-btn.active { background: rgba(0,255,135,0.06); color: var(--green); border-left-color: var(--green); }
@@ -583,51 +637,62 @@
     </div>
     <div class="app-columns">
       <aside class="app-sidebar-left">
-        <div style="font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:0.2em;text-transform:uppercase;padding:0 16px;margin-bottom:8px;">NAVIGATION</div>
+        <div class="app-sidebar-left-nav-label">NAVIGATION</div>
         <button type="button" class="sidebar-nav-btn active">⬡ &nbsp;Market Feed</button>
         <button type="button" class="sidebar-nav-btn">⊕ &nbsp;Comp Search</button>
         <button type="button" class="sidebar-nav-btn">▼ &nbsp;Price Drops</button>
         <button type="button" class="sidebar-nav-btn">◈ &nbsp;Niches</button>
         <button type="button" class="sidebar-nav-btn">◆ &nbsp;Ask COBrA</button>
         <div style="flex:1;min-height:8px;"></div>
-        <div style="border-top:1px solid var(--border);padding:16px;">
-          <div style="font-family:var(--mono);font-size:10px;color:var(--muted);line-height:1.6;">2,963 deals tracked<br>57 niches<br>Updated daily</div>
+        <div style="border-top:1px solid var(--border);padding:16px 20px;">
+          <div style="font-family:var(--mono);font-size:10px;color:var(--muted);line-height:1.8;">2,963 deals tracked<br>57 niches<br>Updated daily</div>
         </div>
       </aside>
       <div class="app-main">
-        <input type="text" class="app-input" placeholder="Search by niche, keyword, or business type..." autocomplete="off">
-        <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:12px;">
-          <button type="button" class="niche-pill">Pet Care</button>
-          <button type="button" class="niche-pill">Health &amp; Fitness</button>
-          <button type="button" class="niche-pill">Home</button>
-          <button type="button" class="niche-pill">Beauty</button>
-          <button type="button" class="niche-pill">Sports</button>
-          <button type="button" class="niche-pill">Technology</button>
-          <button type="button" class="niche-pill">Food &amp; Beverages</button>
-          <button type="button" class="niche-pill">Supplements</button>
-          <button type="button" class="niche-pill">Apparel</button>
-          <button type="button" class="niche-pill">Entertainment</button>
-          <button type="button" class="niche-pill">Travel</button>
-          <button type="button" class="niche-pill">Finance</button>
-          <button type="button" class="niche-pill">Medical</button>
-          <button type="button" class="niche-pill">Culinary</button>
-          <button type="button" class="niche-pill">Music</button>
+        <div class="app-search-header">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <input type="text" class="app-input" placeholder="Search by niche, keyword, or business type..." autocomplete="off">
+            <button type="button" class="app-search-toggle-btn" onclick="toggleAppSearch()">
+              <span class="app-search-arrow" id="app-search-arrow">▾</span>
+              <span id="app-search-label">Filters</span>
+            </button>
+          </div>
+          <div class="app-search-collapsible" id="app-search-collapsible">
+            <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:12px;">
+              <button type="button" class="niche-pill">Pet Care</button>
+              <button type="button" class="niche-pill">Health &amp; Fitness</button>
+              <button type="button" class="niche-pill">Home</button>
+              <button type="button" class="niche-pill">Beauty</button>
+              <button type="button" class="niche-pill">Sports</button>
+              <button type="button" class="niche-pill">Technology</button>
+              <button type="button" class="niche-pill">Food &amp; Beverages</button>
+              <button type="button" class="niche-pill">Supplements</button>
+              <button type="button" class="niche-pill">Apparel</button>
+              <button type="button" class="niche-pill">Entertainment</button>
+              <button type="button" class="niche-pill">Travel</button>
+              <button type="button" class="niche-pill">Finance</button>
+              <button type="button" class="niche-pill">Medical</button>
+              <button type="button" class="niche-pill">Culinary</button>
+              <button type="button" class="niche-pill">Music</button>
+            </div>
+            <div style="display:flex;gap:10px;align-items:center;margin-top:12px;flex-wrap:wrap;padding-bottom:4px;">
+              <input type="number" class="app-input" placeholder="$0 – any" style="width:160px;">
+              <select class="app-select" style="width:100px;">
+                <option>±25%</option>
+                <option>±50%</option>
+                <option>±75%</option>
+                <option>±100%</option>
+              </select>
+              <select class="app-select" style="width:120px;">
+                <option>Sold only</option>
+                <option>All</option>
+              </select>
+              <button type="button" class="btn" style="font-size:11px;">SEARCH</button>
+            </div>
+          </div>
         </div>
-        <div style="display:flex;gap:10px;align-items:center;margin-top:12px;flex-wrap:wrap;">
-          <input type="number" class="app-input" placeholder="$0 – any" style="width:160px;">
-          <select class="app-select" style="width:100px;">
-            <option>±25%</option>
-            <option>±50%</option>
-            <option>±75%</option>
-            <option>±100%</option>
-          </select>
-          <select class="app-select" style="width:120px;">
-            <option>Sold only</option>
-            <option>All</option>
-          </select>
-          <button type="button" class="btn" style="font-size:11px;">SEARCH</button>
-        </div>
-        <div style="font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:20px;letter-spacing:0.05em;">// 16 listings</div>
+        <div class="app-listings-scroll">
+        <div style="font-family:var(--mono);font-size:11px;color:var(--muted);margin-bottom:8px;letter-spacing:0.05em;">// 16 listings</div>
         <div class="app-listing-grid">
           <div class="app-listing-card">
             <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;">
@@ -998,17 +1063,17 @@
             </div>
           </div>
         </div>
+        </div>
       </div>
       <aside class="app-sidebar-right">
-        <div style="padding:73px 16px 16px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:flex-start;gap:12px;">
-          <div>
-            <div style="font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:0.15em;text-transform:uppercase;">// Market Feed</div>
-          </div>
+        <div class="app-feed-header" style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;">
+          <div style="font-family:var(--mono);font-size:11px;color:var(--green);letter-spacing:0.15em;text-transform:uppercase;">// Market Feed</div>
           <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
             <span class="status-dot" style="margin-right:0;"></span>
             <span style="font-family:var(--mono);font-size:10px;color:var(--green);">Live</span>
           </div>
         </div>
+        <div class="app-feed-scroll">
         <div class="app-feed-stack">
           <div class="data-card">
             <div class="card-type">
@@ -1094,6 +1159,7 @@
             <hr class="card-divider">
             <div class="card-insight">Pricing discipline is everything. Businesses priced at market multiple sell fast. Overpriced ones sit and compress.</div>
           </div>
+        </div>
         </div>
       </aside>
     </div>
@@ -1183,6 +1249,16 @@ document.querySelectorAll('.niche-pill').forEach(btn => {
     btn.classList.add('active');
   });
 });
+
+function toggleAppSearch() {
+  var body  = document.getElementById('app-search-collapsible');
+  var arrow = document.getElementById('app-search-arrow');
+  var label = document.getElementById('app-search-label');
+  var open  = !body.classList.contains('collapsed');
+  body.classList.toggle('collapsed', open);
+  arrow.classList.toggle('collapsed', open);
+  label.textContent = open ? 'Filters' : 'Hide';
+}
 </script>
 
 </body>
